@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, TouchableOpacity, StatusBar } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, StatusBar, ImageBackground } from 'react-native';
 import React from 'react';
 import { useRouter } from "expo-router";
 import Constants from 'expo-constants';
@@ -12,21 +12,27 @@ const Home = () => {
         <>
             <StatusBar translucent backgroundColor="transparent" />
             <View style={styles.container}>
-               
-                <View style={styles.buttons}>
-                    <TouchableOpacity
-                        style={styles.button}
-                        onPress={() => router.push("/auth/login")}
-                    >
-                        <Text style={styles.buttonText}>Login</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        style={styles.button}
-                        onPress={() => router.push("/auth/register")}
-                    >
-                        <Text style={styles.buttonText}>Register</Text>
-                    </TouchableOpacity>
-                </View>
+                <ImageBackground
+                    source={require('../assets/homefront.jpg')}
+                    style={styles.backgroundImage}
+                    imageStyle={{ opacity: 1.5 }}
+                >
+
+                    <View style={styles.buttons}>
+                        <TouchableOpacity
+                            style={styles.button}
+                            onPress={() => router.push("/auth/login")}
+                        >
+                            <Text style={styles.buttonText}>Login</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={styles.button}
+                            onPress={() => router.push("/auth/register")}
+                        >
+                            <Text style={styles.buttonText}>Register</Text>
+                        </TouchableOpacity>
+                    </View>
+                    </ImageBackground>
             </View>
         </>
     );
@@ -55,7 +61,7 @@ const styles = StyleSheet.create({
         left: 0,
         right: 0,
         borderRadius: 10,
-        marginLeft:15,
+        marginLeft: 15,
     },
     button: {
         borderRadius: 25,
@@ -66,4 +72,8 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: "bold",
     },
+    backgroundImage: {
+        flex: 1,
+        resizeMode: 'cover',
+      }
 });
