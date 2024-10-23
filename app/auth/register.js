@@ -7,6 +7,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { registerUser } from '../(services)/api/Users/registerUserAPI';
 import Constants from 'expo-constants';
 
+
 // Schema
 const RegisterSchema = Yup.object().shape({
   email: Yup.string().email("Invalid email").required("Email is Required"),

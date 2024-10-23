@@ -11,6 +11,7 @@ function AppNavigation() {
     }, [dispatch]);
 
     return (
+        
         <Stack>
 
             <Stack.Screen

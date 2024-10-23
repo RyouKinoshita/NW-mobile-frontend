@@ -22,6 +22,7 @@ export default function RootLayout() {
                 headerShown: false, title: 'Home', tabBarIcon: ({ color }) => (
                     <FontAwesome name='home' color={color} size={28} />
                 )
+                
             }} />
             <Tabs.Screen name="cart" options={{
                 headerShown: false, title: 'Cart', tabBarIcon: ({ color }) => (

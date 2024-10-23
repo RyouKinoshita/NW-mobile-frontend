@@ -2,6 +2,7 @@ import { StyleSheet, Text, View,StatusBar } from 'react-native'
 import React from 'react'
 import Constants from 'expo-constants'
 
+
 const Notifications = () => {
   return (
     <>

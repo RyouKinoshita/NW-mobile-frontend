@@ -24,6 +24,7 @@ const registerUser = async ({ email, password, name, avatar }) => {
                     'Content-Type': 'multipart/form-data',
                 },
             }
+            
         );
 
         return response.data;

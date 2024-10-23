@@ -8,6 +8,7 @@ const Home = () => {
     const [status, setStatus] = React.useState({});
     const router = useRouter();
 
+    
     return (
         <>
             <StatusBar translucent backgroundColor="transparent" />

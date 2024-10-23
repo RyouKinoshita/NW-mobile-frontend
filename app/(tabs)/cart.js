@@ -6,6 +6,7 @@ const Cart = () => {
   return (
     <>
     
+    
     <StatusBar translucent backgroundColor={"transparent"} />
     <View style={styles.container}>
       <Text>cart</Text>

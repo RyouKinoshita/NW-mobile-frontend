@@ -2,6 +2,7 @@
 
 # dependencies
 node_modules/
+/assets/common/baseURL.js
 
 # Expo
 .expo/
@@ -30,6 +31,7 @@ yarn-error.*
 
 # local env files
 .env*.local
+
 
 # typescript
 *.tsbuildinfo
