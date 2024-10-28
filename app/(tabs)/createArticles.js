@@ -2,20 +2,20 @@ import { StyleSheet, Text, View,StatusBar } from 'react-native'
 import React from 'react'
 import Constants from 'expo-constants'
 
-const Cart = () => {
+const createArticles = () => {
   return (
     <>
     
     
     <StatusBar translucent backgroundColor={"transparent"} />
     <View style={styles.container}>
-      <Text>cart</Text>
+      <Text> Create Post </Text>
     </View>
     </>
   )
 }
 
-export default Cart
+export default createArticles
 
 const styles = StyleSheet.create({
 

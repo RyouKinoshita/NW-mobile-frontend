@@ -24,13 +24,13 @@ const Home = () => {
                             style={styles.button}
                             onPress={() => router.push("/auth/login")}
                         >
-                            <Text style={styles.buttonText}>Login</Text>
+                            <Text style={styles.buttonText}> Login </Text>
                         </TouchableOpacity>
                         <TouchableOpacity
                             style={styles.button}
                             onPress={() => router.push("/auth/register")}
                         >
-                            <Text style={styles.buttonText}>Register</Text>
+                            <Text style={styles.buttonText}> Register </Text>
                         </TouchableOpacity>
                     </View>
                     </ImageBackground>

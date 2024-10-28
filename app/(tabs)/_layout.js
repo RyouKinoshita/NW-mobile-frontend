@@ -6,6 +6,8 @@ import { useRouter } from "expo-router";
 import Ionicons from '@expo/vector-icons/Ionicons';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
+import { View, Text, StyleSheet } from 'react-native';
+
 export default function RootLayout() {
     const { user } = useSelector((state) => state.auth);
     const router = useRouter();
@@ -17,29 +19,31 @@ export default function RootLayout() {
     }, [user, router]);
 
     return (
-        <Tabs>
-            <Tabs.Screen name="index" options={{
-                headerShown: false, title: 'Home', tabBarIcon: ({ color }) => (
-                    <FontAwesome name='home' color={color} size={28} />
-                )
-                
-            }} />
-            <Tabs.Screen name="cart" options={{
-                headerShown: false, title: 'Cart', tabBarIcon: ({ color }) => (
-                    <Ionicons name='cart' color={color} size={28} />
-                )
-            }} />
-            <Tabs.Screen name="notifications" options={{
-                headerShown: false, title: 'Notifications', tabBarIcon: ({ color }) => (
-                    <MaterialIcons name='notifications' color={color} size={28} />
-                )
-            }} />
-            <Tabs.Screen name="profile" options={{
-                headerShown: false, title: 'Profile', tabBarIcon: ({ color }) => (
-                    <FontAwesome name='user' color={color} size={28} />
-                )
-            }} />
+            <Tabs>
+                <Tabs.Screen name="index" options={{
+                    headerShown: false, title: 'Home', tabBarIcon: ({ color }) => (
+                        <FontAwesome name='home' color={color} size={28} />
+                    )
+                }} />
 
-        </Tabs>
+                <Tabs.Screen name="createArticles" options={{
+                    headerShown: false, title: 'Post', tabBarIcon: ({ color }) => (
+                        <Ionicons name='add-circle-outline' color={color} size={28} />
+                    )
+                }} />
+
+                <Tabs.Screen name="viewPost" options={{
+                    headerShown: false, title: 'MyArticles', tabBarIcon: ({ color }) => (
+                        <Ionicons name="book-outline" color={color} size={28} />
+                    )
+                }} />
+
+                <Tabs.Screen name="profile" options={{
+                    headerShown: false, title: 'Profile', tabBarIcon: ({ color }) => (
+                        <FontAwesome name='user' color={color} size={28} />
+                    )
+                }} />
+
+            </Tabs>
     );
 }

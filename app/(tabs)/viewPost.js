@@ -3,18 +3,18 @@ import React from 'react'
 import Constants from 'expo-constants'
 
 
-const Notifications = () => {
+const viewPost = () => {
   return (
     <>
    <StatusBar translucent backgroundColor={"transparent"} />
    <View style={styles.container}>
-      <Text>Notifications</Text>
+      <Text> View Post </Text>
     </View>
     </>
   )
 }
 
-export default Notifications
+export default viewPost
 
 const styles = StyleSheet.create({
     container: {
