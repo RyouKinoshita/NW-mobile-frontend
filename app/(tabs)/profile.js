@@ -8,7 +8,7 @@ const Profile = () => {
         <>
             <StatusBar translucent backgroundColor={"transparent"} />
             <View style={styles.container}>
-                <Text>Profile</Text>
+                <Text> Profile </Text>
             </View>
         </>
     )

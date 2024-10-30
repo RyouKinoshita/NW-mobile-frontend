@@ -32,7 +32,7 @@ export default function RootLayout() {
                     )
                 }} />
 
-                <Tabs.Screen name="viewPost" options={{
+                <Tabs.Screen name="viewArticles" options={{
                     headerShown: false, title: 'MyArticles', tabBarIcon: ({ color }) => (
                         <Ionicons name="book-outline" color={color} size={28} />
                     )
