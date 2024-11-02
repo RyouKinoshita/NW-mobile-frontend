@@ -4,7 +4,8 @@ import { FontAwesome } from '@expo/vector-icons';
 import { useEffect } from "react";
 import { useRouter } from "expo-router";
 import Ionicons from '@expo/vector-icons/Ionicons';
-import Fontisto from '@expo/vector-icons/Fontisto';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+
 import { View, Text, StyleSheet } from 'react-native';
 
 export default function RootLayout() {
@@ -13,23 +14,25 @@ export default function RootLayout() {
 
     useEffect(() => {
         if (!user) {
-            router.replace("/");
-            return;
+          router.replace("/");
+          return;
         }
-
+    
         const role = user.user?.role || user.role;
         switch (role) {
-            case 'buyer':
-                router.replace("/(tabs)");
-                break;
-            case 'seller':
-                router.replace("/components/Seller/(tabs)");
-                break;
-          
-            default:
-                break;
+          case 'buyer':
+            router.replace("/(tabs)");
+            break;
+          case 'seller':
+            router.replace("/components/Seller/(tabs)");
+            break;
+        //   case 'admin':
+        //     router.replace("/components/Admin/(tabs)");
+        //     break;
+          default:
+            break;
         }
-    }, [user, router]);
+      }, [user, router]);
 
     return (
         <Tabs>
@@ -39,15 +42,9 @@ export default function RootLayout() {
                 )
             }} />
 
-            <Tabs.Screen name="marketPlace" options={{
-                headerShown: false, title: 'MarketPlace', tabBarIcon: ({ color }) => (
-                    <Fontisto name="shopping-store" size={28} color="black" />
-                )
-            }} />
-
-            <Tabs.Screen name="viewArticles" options={{
-                headerShown: false, title: 'MyArticles', tabBarIcon: ({ color }) => (
-                    <Ionicons name="book-outline" color={color} size={28} />
+            <Tabs.Screen name="product" options={{
+                headerShown: false, title: 'Product', tabBarIcon: ({ color }) => (
+                    <Ionicons name='add-circle-outline' color={color} size={28} />
                 )
             }} />
 
@@ -59,4 +56,3 @@ export default function RootLayout() {
         </Tabs>
     );
 }
-

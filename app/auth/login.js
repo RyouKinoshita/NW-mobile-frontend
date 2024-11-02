@@ -6,6 +6,7 @@ import {
     Text,
     TouchableOpacity,
     StatusBar,
+    Alert,
     ImageBackground,
 } from "react-native";
 import { Formik } from "formik";
@@ -53,6 +54,10 @@ export default function Login() {
                                         dispatch(loginAction(data));
                                     })
                                     .catch((err) => {
+                                        Alert.alert(
+                                            "Login Failed", "Your Email or Password is Incorrent. Try Again",
+                                            [{ text: "OK" }]
+                                        );
                                         console.log(err);
                                     });
                             }}
