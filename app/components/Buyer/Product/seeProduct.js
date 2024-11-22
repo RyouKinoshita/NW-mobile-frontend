@@ -1,9 +1,17 @@
-import { StyleSheet, Text, View, Image, ScrollView, StatusBar, TouchableOpacity, Alert } from 'react-native';
+import {
+    StyleSheet,
+    Text,
+    View,
+    Image,
+    ScrollView,
+    StatusBar,
+    TouchableOpacity,
+    Alert,
+} from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { useRoute } from '@react-navigation/native';
 import Constants from 'expo-constants';
 import { useDispatch, useSelector } from 'react-redux';
-import AntDesign from '@expo/vector-icons/AntDesign';
 import { getUser } from '../../../(services)/api/Users/getUser';
 import { addToCart } from '../../../(redux)/cartSlice';
 
@@ -49,14 +57,13 @@ const SeeProduct = () => {
         Alert.alert("Added to Cart", `${product.name} has been added to your cart.`);
     };
 
-
     return (
         <>
-            <StatusBar translucent backgroundColor={"transparent"} />
+            <StatusBar translucent backgroundColor="transparent" />
             <ScrollView style={styles.container}>
                 {product ? (
                     <>
-                        <View style={styles.productDetailContainer}>
+                        <View style={styles.productCard}>
                             <Image
                                 source={{ uri: product.images[0].url }}
                                 style={styles.image}
@@ -65,39 +72,42 @@ const SeeProduct = () => {
                             <Text style={styles.title}>{product.name}</Text>
                             <View style={styles.priceContainer}>
                                 <Text style={styles.priceLabel}>Price:</Text>
-                                <Text style={styles.priceValue}>₱{product.price}</Text>
+                                <Text style={styles.priceValue}>₱{product.price.toFixed(2)}</Text>
                             </View>
-                            <View style={styles.sackContainer}>
-                                <Text style={{ color: 'white' }}>Sack:</Text>
-                                <Text style={{ color: 'white', fontSize: 15, marginLeft: 5 }}>{product.sack}</Text>
+                            <View style={styles.detailContainer}>
+                                <Text style={styles.productLabel}>Sack:</Text>
+                                <Text style={styles.productValue}>{product.sack}</Text>
                             </View>
                             <View style={styles.detailContainer}>
                                 <Text style={styles.productLabel}>Description:</Text>
                                 <Text style={styles.productValue}>{product.description}</Text>
+                            </View>
+                            <View style={styles.detailContainer}>
                                 <Text style={styles.productLabel}>Location:</Text>
                                 <Text style={styles.productValue}>{product.location}</Text>
                             </View>
                             {seller && (
-                                <View style={styles.sellerContainer}>
-                                    <Image
-                                        source={{ uri: seller.avatar.url }}
-                                        style={styles.avatar}
-                                    />
-                                    <View style={styles.sellerInfo}>
-                                        <Text style={styles.sellerName}>{seller.name}</Text>
-                                        <Text style={styles.sellerEmail}>{seller.email}</Text>
+                                <View style={styles.sellerSection}>
+                                    <Text style={styles.sellerTitle}>Seller Info</Text>
+                                    <View style={styles.sellerContainer}>
+                                        <Image
+                                            source={{ uri: seller.avatar.url }}
+                                            style={styles.avatar}
+                                        />
+                                        <View style={styles.sellerInfo}>
+                                            <Text style={styles.sellerName}>{seller.name}</Text>
+                                            <Text style={styles.sellerEmail}>{seller.email}</Text>
+                                        </View>
                                     </View>
                                 </View>
                             )}
                         </View>
-                        <View style={{ justifyContent: 'flex-end' }}>
-                            <TouchableOpacity
-                                onPress={handleAddToCart}
-                                style={{ backgroundColor: '#FFBF00', padding: 15, maxWidth: '30%', borderRadius: 30 }}
-                            >
-                                <Text style={{ marginLeft: 5 }}>Add to Cart</Text>
-                            </TouchableOpacity>
-                        </View>
+                        <TouchableOpacity
+                            onPress={handleAddToCart}
+                            style={styles.addToCartButton}
+                        >
+                            <Text style={styles.addToCartText}>Add to Cart</Text>
+                        </TouchableOpacity>
                     </>
                 ) : (
                     <Text>No product data available.</Text>
@@ -110,89 +120,105 @@ const SeeProduct = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 20,
-        backgroundColor: '#fff',
+        backgroundColor: '#f5f5f5',
+        paddingHorizontal: 16,
         paddingTop: Constants.statusBarHeight,
     },
-    productDetailContainer: {
+    productCard: {
+        backgroundColor: '#fff',
+        borderRadius: 12,
+        padding: 16,
         marginBottom: 20,
-        backgroundColor: 'black',
-        borderRadius: 10,
-        padding: 15,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
         elevation: 3,
     },
     image: {
         width: '100%',
-        height: 300,
-        borderRadius: 10,
-        marginBottom: 15,
+        height: 250,
+        borderRadius: 12,
+        marginBottom: 16,
     },
     title: {
         fontSize: 22,
         fontWeight: 'bold',
-        marginBottom: 10,
-        color: 'white',
+        marginBottom: 8,
+        color: '#333',
     },
     priceContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 10,
+        marginBottom: 16,
     },
     priceLabel: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: 'white',
-        marginRight: 5,
+        fontSize: 16,
+        color: '#666',
+        marginRight: 4,
     },
     priceValue: {
         fontSize: 20,
-        color: 'white',
         fontWeight: 'bold',
-    },
-    sackContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 10,
+        color: '#388E3C',
     },
     detailContainer: {
         marginBottom: 10,
-        backgroundColor: 'white',
-        padding: 10,
-        borderRadius: 30,
     },
     productLabel: {
+        fontSize: 16,
         fontWeight: 'bold',
-        fontSize: 14,
-        marginTop: 10,
-        color: 'black',
+        color: '#333',
     },
     productValue: {
         fontSize: 16,
-        marginBottom: 5,
-        color: 'black',
+        color: '#555',
+    },
+    sellerSection: {
+        marginTop: 16,
+        padding: 10,
+        backgroundColor: '#f9f9f9',
+        borderRadius: 8,
+    },
+    sellerTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#444',
+        marginBottom: 10,
     },
     sellerContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginTop: 15,
     },
     avatar: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        marginRight: 10,
+        width: 50,
+        height: 50,
+        borderRadius: 25,
+        marginRight: 12,
     },
     sellerInfo: {
-        flexDirection: 'column',
+        flex: 1,
     },
     sellerName: {
         fontSize: 16,
         fontWeight: 'bold',
-        color: 'white',
+        color: '#333',
     },
     sellerEmail: {
         fontSize: 14,
-        color: 'gray',
+        color: '#666',
+    },
+    addToCartButton: {
+        backgroundColor: '#FFBF00',
+        paddingVertical: 12,
+        borderRadius: 25,
+        alignItems: 'center',
+        marginBottom: 20,
+    },
+    addToCartText: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#fff',
     },
 });
 

@@ -170,9 +170,19 @@ const styles = StyleSheet.create({
     sackCount: { marginHorizontal: 8, fontSize: 16 },
     removeButton: { color: 'red', fontWeight: 'bold', flex: 0.5, textAlign: 'right' },
     clearCartButton: { padding: 12, backgroundColor: '#FFBF00', borderRadius: 8, alignItems: 'center', marginTop: 16 },
-    checkoutButton: { padding: 12, backgroundColor: 'blue', borderRadius: 8, alignItems: 'center', marginTop: 16 },
+    checkoutButton: {
+        padding: 12,
+        backgroundColor: '#6AB04A', // Muted green
+        borderRadius: 8,
+        alignItems: 'center',
+        marginTop: 16,
+    },
+    checkoutText: {
+        color: 'white',
+        fontWeight: 'bold',
+    },
+    
     clearCartText: { color: 'white', fontWeight: 'bold' },
-    checkoutText: { color: 'white', fontWeight: 'bold' },
     emptyCartText: { fontSize: 18, color: '#888', textAlign: 'center', marginTop: 20 },
     totalPrice: { fontSize: 18, fontWeight: 'bold', marginTop: 16, textAlign: 'center' }, // Total Price style
 
