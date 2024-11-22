@@ -1,13 +1,18 @@
-import { StyleSheet, Text, View, Image, ScrollView, StatusBar } from 'react-native';
+import { StyleSheet, Text, View, Image, ScrollView, StatusBar, TouchableOpacity, Alert } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { useRoute } from '@react-navigation/native';
 import Constants from 'expo-constants';
+import { useDispatch, useSelector } from 'react-redux';
+import AntDesign from '@expo/vector-icons/AntDesign';
 import { getUser } from '../../../(services)/api/Users/getUser';
+import { addToCart } from '../../../(redux)/cartSlice';
 
 const SeeProduct = () => {
     const route = useRoute();
     const { product } = route.params || {};
-    const [user, setUser] = useState(null);
+    const [seller, setUser] = useState(null);
+    const dispatch = useDispatch();
+    const { user } = useSelector((state) => state.auth);
 
     useEffect(() => {
         let isMounted = true;
@@ -34,45 +39,66 @@ const SeeProduct = () => {
         };
     }, [product]);
 
+    const handleAddToCart = () => {
+        const userId = user?._id || user.user?._id;
+        if (!userId) {
+            Alert.alert("Error", "Please log in to add items to the cart.");
+            return;
+        }
+        dispatch(addToCart({ product, userId }));
+        Alert.alert("Added to Cart", `${product.name} has been added to your cart.`);
+    };
+
+
     return (
         <>
             <StatusBar translucent backgroundColor={"transparent"} />
             <ScrollView style={styles.container}>
                 {product ? (
-                    <View style={styles.productDetailContainer}>
-                        <Image
-                            source={{ uri: product.images[0].url }}
-                            style={styles.image}
-                            resizeMode="cover"
-                        />
-                        <Text style={styles.title}>{product.name}</Text>
-                        <View style={styles.priceContainer}>
-                            <Text style={styles.priceLabel}>Price:</Text>
-                            <Text style={styles.priceValue}>₱{product.price}</Text>
-                        </View>
-                        <View style={styles.sackContainer}>
-                            <Text style={{ color: 'white' }}>Sack:</Text>
-                            <Text style={{ color: 'white', fontSize: 15, marginLeft: 5 }}>{product.sack}</Text>
-                        </View>
-                        <View style={styles.detailContainer}>
-                            <Text style={styles.productLabel}>Description:</Text>
-                            <Text style={styles.productValue}>{product.description}</Text>
-                            <Text style={styles.productLabel}>Location:</Text>
-                            <Text style={styles.productValue}>{product.location}</Text>
-                        </View>
-                        {user && (
-                            <View style={styles.sellerContainer}>
-                                <Image
-                                    source={{ uri: user.avatar.url }}
-                                    style={styles.avatar}
-                                />
-                                <View style={styles.sellerInfo}>
-                                    <Text style={styles.sellerName}>{user.name}</Text>
-                                    <Text style={styles.sellerEmail}>{user.email}</Text>
-                                </View>
+                    <>
+                        <View style={styles.productDetailContainer}>
+                            <Image
+                                source={{ uri: product.images[0].url }}
+                                style={styles.image}
+                                resizeMode="cover"
+                            />
+                            <Text style={styles.title}>{product.name}</Text>
+                            <View style={styles.priceContainer}>
+                                <Text style={styles.priceLabel}>Price:</Text>
+                                <Text style={styles.priceValue}>₱{product.price}</Text>
                             </View>
-                        )}
-                    </View>
+                            <View style={styles.sackContainer}>
+                                <Text style={{ color: 'white' }}>Sack:</Text>
+                                <Text style={{ color: 'white', fontSize: 15, marginLeft: 5 }}>{product.sack}</Text>
+                            </View>
+                            <View style={styles.detailContainer}>
+                                <Text style={styles.productLabel}>Description:</Text>
+                                <Text style={styles.productValue}>{product.description}</Text>
+                                <Text style={styles.productLabel}>Location:</Text>
+                                <Text style={styles.productValue}>{product.location}</Text>
+                            </View>
+                            {seller && (
+                                <View style={styles.sellerContainer}>
+                                    <Image
+                                        source={{ uri: seller.avatar.url }}
+                                        style={styles.avatar}
+                                    />
+                                    <View style={styles.sellerInfo}>
+                                        <Text style={styles.sellerName}>{seller.name}</Text>
+                                        <Text style={styles.sellerEmail}>{seller.email}</Text>
+                                    </View>
+                                </View>
+                            )}
+                        </View>
+                        <View style={{ justifyContent: 'flex-end' }}>
+                            <TouchableOpacity
+                                onPress={handleAddToCart}
+                                style={{ backgroundColor: '#FFBF00', padding: 15, maxWidth: '30%', borderRadius: 30 }}
+                            >
+                                <Text style={{ marginLeft: 5 }}>Add to Cart</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </>
                 ) : (
                     <Text>No product data available.</Text>
                 )}
@@ -93,7 +119,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'black',
         borderRadius: 10,
         padding: 15,
-        elevation: 3, // Shadow effect
+        elevation: 3,
     },
     image: {
         width: '100%',

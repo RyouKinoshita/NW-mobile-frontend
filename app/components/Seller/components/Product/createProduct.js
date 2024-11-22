@@ -35,7 +35,7 @@ const CreateProduct = () => {
     if (sack < 99999) {
       const newSack = sack + 1;
       setSack(newSack);
-      setFieldValue('sack', newSack); // Correctly update Formik state
+      setFieldValue('sack', newSack);
     }
   };
 
@@ -43,15 +43,15 @@ const CreateProduct = () => {
     if (sack > 0) {
       const newSack = sack - 1;
       setSack(newSack);
-      setFieldValue('sack', newSack); // Correctly update Formik state
+      setFieldValue('sack', newSack);
     }
   };
 
   const handleChangeText = (text, setFieldValue) => {
-    const value = parseInt(text, 10) || 0; // Ensure to parse correctly
+    const value = parseInt(text, 10) || 0; 
     const newValue = value > 99999 ? 99999 : value;
     setSack(newValue);
-    setFieldValue('sack', newValue); // Correctly update Formik state
+    setFieldValue('sack', newValue);
   };
 
   return (
@@ -72,7 +72,6 @@ const CreateProduct = () => {
               quality: '', sack: 0, location: '',
             }}
             onSubmit={async (values) => {
-              // console.log('FormikValues', values)
               try {
                 const response = await createProduct({
                   ...values,
@@ -370,3 +369,5 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
 });
+
+

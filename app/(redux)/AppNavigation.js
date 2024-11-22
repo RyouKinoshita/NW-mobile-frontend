@@ -3,12 +3,14 @@ import { useDispatch } from "react-redux";
 import { loadUser } from "./authSlice";
 import { Stack } from "expo-router";
 import { ArticleProvider } from "../context/ArticleContext";
+import { loadCart } from "./cartSlice";
 
 function AppNavigation() {
     const dispatch = useDispatch();
 
     useEffect(() => {
         dispatch(loadUser());
+        dispatch(loadCart());
     }, [dispatch]);
 
     return (

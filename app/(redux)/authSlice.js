@@ -36,13 +36,16 @@ const authSlice = createSlice({
       state.user = action.payload;
       state.loading = false;
     },
+    updateUserAction: (state, action) => {
+      state.user = action.payload;
+    },
     setLoading: (state, action) => {
       state.loading = action.payload;
     },
   },
 });
 
-export const { loginAction, logoutAction, setUser, setLoading } =
+export const { loginAction, logoutAction, setUser, setLoading, updateUserAction } =
   authSlice.actions;
 
 export default authSlice.reducer;
@@ -55,3 +58,5 @@ export const loadUser = () => async (dispatch) => {
     dispatch(setLoading(false));
   }
 };
+
+

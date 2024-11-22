@@ -17,6 +17,7 @@ import { loginUser } from "../(services)/api/Users/loginUserAPI";
 import { useDispatch, useSelector } from "react-redux";
 import { loginAction } from "../(redux)/authSlice";
 import Constants from 'expo-constants';
+import { setUserId } from "../(redux)/cartSlice";
 
 const LoginSchema = Yup.object().shape({
     email: Yup.string().email("Invalid email").required("Required"),
@@ -30,12 +31,12 @@ export default function Login() {
         mutationFn: loginUser,
         mutationKey: ["login"],
     });
-    
+
     const user = useSelector((state) => state.auth.user);
 
     useEffect(() => {
         if (user) {
-            router.push("/(tabs)"); 
+            router.push("/(tabs)");
         }
     }, [user, router]);
 
@@ -43,63 +44,64 @@ export default function Login() {
         <>
             <StatusBar translucent backgroundColor="transparent" />
             <View style={styles.container}>
-                    <View style={styles.overlay}>
-                        <Text style={styles.title}>Login</Text>
-                        <Formik
-                            initialValues={{ email: "", password: "" }}
-                            validationSchema={LoginSchema}
-                            onSubmit={(values) => {
-                                mutation.mutateAsync(values)
-                                    .then((data) => {
-                                        dispatch(loginAction(data));
-                                    })
-                                    .catch((err) => {
-                                        Alert.alert(
-                                            "Login Failed", "Your Email or Password is Incorrent. Try Again",
-                                            [{ text: "OK" }]
-                                        );
-                                        console.log(err);
-                                    });
-                            }}
-                        >
-                            {({
-                                handleChange,
-                                handleBlur,
-                                handleSubmit,
-                                values,
-                                errors,
-                                touched,
-                            }) => (
-                                <View style={styles.form}>
-                                    <TextInput
-                                        style={styles.input}
-                                        placeholder="Email"
-                                        onChangeText={handleChange("email")}
-                                        onBlur={handleBlur("email")}
-                                        value={values.email}
-                                        keyboardType="email-address"
-                                    />
-                                    {errors.email && touched.email ? (
-                                        <Text style={styles.errorText}>{errors.email}</Text>
-                                    ) : null}
-                                    <TextInput
-                                        style={styles.input}
-                                        placeholder="Password"
-                                        onChangeText={handleChange("password")}
-                                        onBlur={handleBlur("password")}
-                                        value={values.password}
-                                        secureTextEntry
-                                    />
-                                    {errors.password && touched.password ? (
-                                        <Text style={styles.errorText}>{errors.password}</Text>
-                                    ) : null}
-                                    <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-                                        <Text style={styles.buttonText}>Login</Text>
-                                    </TouchableOpacity>
-                                </View>
-                            )}
-                        </Formik>
-                    </View>
+                <View style={styles.overlay}>
+                    <Text style={styles.title}>Login</Text>
+                    <Formik
+                        initialValues={{ email: "", password: "" }}
+                        validationSchema={LoginSchema}
+                        onSubmit={(values) => {
+                            mutation.mutateAsync(values)
+                                .then((data) => {
+                                    dispatch(loginAction(data));
+                                    dispatch(setUserId(data.user._id));
+                                })
+                                .catch((err) => {
+                                    Alert.alert(
+                                        "Login Failed", "Your Email or Password is Incorrent. Try Again",
+                                        [{ text: "OK" }]
+                                    );
+                                    console.log(err);
+                                });
+                        }}
+                    >
+                        {({
+                            handleChange,
+                            handleBlur,
+                            handleSubmit,
+                            values,
+                            errors,
+                            touched,
+                        }) => (
+                            <View style={styles.form}>
+                                <TextInput
+                                    style={styles.input}
+                                    placeholder="Email"
+                                    onChangeText={handleChange("email")}
+                                    onBlur={handleBlur("email")}
+                                    value={values.email}
+                                    keyboardType="email-address"
+                                />
+                                {errors.email && touched.email ? (
+                                    <Text style={styles.errorText}>{errors.email}</Text>
+                                ) : null}
+                                <TextInput
+                                    style={styles.input}
+                                    placeholder="Password"
+                                    onChangeText={handleChange("password")}
+                                    onBlur={handleBlur("password")}
+                                    value={values.password}
+                                    secureTextEntry
+                                />
+                                {errors.password && touched.password ? (
+                                    <Text style={styles.errorText}>{errors.password}</Text>
+                                ) : null}
+                                <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+                                    <Text style={styles.buttonText}>Login</Text>
+                                </TouchableOpacity>
+                            </View>
+                        )}
+                    </Formik>
+                </View>
             </View>
         </>
     );
@@ -156,3 +158,5 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
     },
 });
+
+

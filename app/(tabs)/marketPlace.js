@@ -3,13 +3,14 @@ import React, { useCallback, useState } from 'react'
 import Constants from 'expo-constants'
 import { useFocusEffect, useNavigation, useRouter } from 'expo-router';
 import { getAllProduct } from '../(services)/api/Product/getAllProducts';
+import { useSelector } from 'react-redux';
 
 const MarketPlace = () => {
     const router = useRouter();
     const [products, setProducts] = useState([]);
     const navigation = useNavigation();
 
-    // Fetch posts
+    // Fetch products
     const fetchProducts = async () => {
         try {
             const data = await getAllProduct();
@@ -45,9 +46,6 @@ const MarketPlace = () => {
                                 <Text style={styles.productValue}>₱{product.price}</Text>
                                 <Text style={styles.productLabel}>Sack:</Text>
                                 <Text style={styles.productValue}>{product.sack}</Text>
-                                <Text style={styles.productValue}>{product.username}</Text>
-                                <Text style={styles.productLabel}>Description:</Text>
-                                <Text style={styles.productValue}>{product.description}</Text>
                                 <Text style={styles.productLabel}>Location:</Text>
                                 <Text style={styles.productValue}>{product.location}</Text>
                             </TouchableOpacity>
@@ -136,3 +134,4 @@ const styles = StyleSheet.create({
         color: 'black',
     },
 });
+

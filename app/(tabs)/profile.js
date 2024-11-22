@@ -21,6 +21,18 @@ const Profile = () => {
             <StatusBar translucent backgroundColor={"transparent"} />
             <View style={styles.container}>
                 <Text> Profile </Text>
+                <TouchableOpacity style={styles.option}
+                onPress={()=> navigation.navigate('components/Buyer/User/addAddress')}
+                >
+                    <Icon name="user" size={24} color="#4caf50" />
+                    <Text style={styles.optionText}>Address</Text>
+                    <Icon
+                        name="angle-right"
+                        size={24}
+                        color="#999"
+                        style={styles.optionIcon}
+                    />
+                </TouchableOpacity>
                 <TouchableOpacity style={styles.option} onPress={handleLogout}>
                     <Icon name="sign-out" size={24} color="#e91e63" />
                     <Text style={styles.optionText}>Logout</Text>
