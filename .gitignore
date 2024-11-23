@@ -2,7 +2,6 @@
 
 # dependencies
 node_modules/
-/assets/common/baseURL.js
 
 # Expo
 .expo/
