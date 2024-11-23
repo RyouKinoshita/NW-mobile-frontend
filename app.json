@@ -1,5 +1,4 @@
 {
-  
   "expo": {
     "name": "frontend",
     "slug": "frontend",
@@ -20,14 +19,22 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.kellyncodon.frontend"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
-    ,
+    },
     "plugins": [
       "expo-router"
-    ]
+    ],
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "8ec4a48f-d37e-4a43-b1f3-bdbfd42ba9d7"
+      }
+    }
   }
 }
