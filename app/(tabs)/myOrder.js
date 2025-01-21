@@ -1,31 +1,32 @@
-import { StyleSheet, Text, View, FlatList, StatusBar, ActivityIndicator } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import { StyleSheet, Text, View, FlatList, StatusBar, ActivityIndicator, TouchableOpacity } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import Constants from 'expo-constants';
 import { myOrder } from '../(services)/api/Users/myOrder';
+import { useFocusEffect, useNavigation } from 'expo-router';
 
 const MyOrder = () => {
     const { user } = useSelector((state) => state.auth);
     const userId = user?._id || user?.user?._id;
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
+    const navigation = useNavigation()
 
-    useEffect(() => {
-        const fetchOrders = async () => {
-            try {
-                const response = await myOrder(userId);
-                setOrders(response.orders);
-                setLoading(false);
-            } catch (error) {
-                console.error('Error fetching orders:', error);
-                setLoading(false);
-            }
-        };
-
-        if (userId) {
-            fetchOrders();
+    const fetchOrders = async () => {
+        try {
+            const response = await myOrder(userId);
+            setOrders(response.orders || []);
+        } catch (error) {
+        } finally {
+            setLoading(false);
         }
-    }, [userId]);
+    };
+
+    useFocusEffect(
+        useCallback(() => {
+            fetchOrders();
+        }, [])
+    );
 
     if (loading) {
         return (
@@ -48,28 +49,36 @@ const MyOrder = () => {
                         data={orders}
                         keyExtractor={(item) => item._id}
                         renderItem={({ item }) => (
-                            <View style={styles.orderContainer}>
-                                <Text style={styles.orderId}>Order ID: {item._id}</Text>
-                                <Text style={[styles.status, item.status === 'Pending' ? styles.pending : styles.delivered]}>
-                                    Status: {item.status}
-                                </Text>
-                                <Text>Order Date: {new Date(item.orderDate).toLocaleString()}</Text>
-                                <Text style={styles.addressHeader}>Delivery Address:</Text>
-                                <Text style={styles.address}>
-                                    {item.deliveryAddress.lotNum}, {item.deliveryAddress.street}, {item.deliveryAddress.baranggay}, {item.deliveryAddress.city}
-                                </Text>
-                                <Text>Payment Method: {item.paymentMethod}</Text>
-                                <Text style={styles.totalPrice}>Total Price: PHP {item.totalPrice}</Text>
+                            <TouchableOpacity
+                                key={item._id}
+                                onPress={() => navigation.navigate('components/Buyer/Order/seeOrder', { order: item })}
+                            >
+                                <View style={styles.orderContainer}>
+                                    <Text style={styles.orderId}>Order ID: {item._id}</Text>
+                                    <Text style={[styles.status, item.status === 'Pending' ? styles.pending : styles.delivered]}>
+                                        Status: {item.status}
+                                    </Text>
+                                    <Text style={[styles.status, item.paymentTerm === 'Not Paid' ? styles.pending : styles.delivered]}>
+                                        Payment Terms: {item.paymentTerm}
+                                    </Text>
+                                    <Text>Order Date: {new Date(item.orderDate).toLocaleString()}</Text>
+                                    <Text style={styles.addressHeader}>Delivery Address:</Text>
+                                    <Text style={styles.address}>
+                                        {item.deliveryAddress.lotNum}, {item.deliveryAddress.street}, {item.deliveryAddress.baranggay}, {item.deliveryAddress.city}
+                                    </Text>
+                                    <Text>Payment Method: {item.paymentMethod}</Text>
+                                    <Text style={styles.totalPrice}>Total Price: PHP {item.totalPrice}</Text>
 
-                                <Text style={styles.productsHeader}>Products:</Text>
-                                {item.products.map((product) => (
-                                    <View key={product._id} style={styles.product}>
-                                        <Text>Product ID: {product.productId}</Text>
-                                        <Text>Sack Count: {product.sackCount}</Text>
-                                        <Text>Price: PHP {product.price}</Text>
-                                    </View>
-                                ))}
-                            </View>
+                                    <Text style={styles.productsHeader}>Products:</Text>
+                                    {item.products.map((product) => (
+                                        <View key={product._id} style={styles.product}>
+                                            <Text>Product ID: {product.productId}</Text>
+                                            <Text>Sack Count: {product.sackCount}</Text>
+                                            <Text>Price: PHP {product.price}</Text>
+                                        </View>
+                                    ))}
+                                </View>
+                            </TouchableOpacity>
                         )}
                     />
                 )}
@@ -159,4 +168,3 @@ const styles = StyleSheet.create({
 });
 
 export default MyOrder;
-

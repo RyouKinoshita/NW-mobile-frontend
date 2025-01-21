@@ -13,18 +13,18 @@ const Product = () => {
     const navigation = useNavigation();
 
     // Fetch posts
-    const fetchProducts = async () => {
-        try {
-            const data = await getAllProduct();
-            const filteredProducts = data.products.filter(product => product.sack >= 1);
-            setProducts(filteredProducts);
-        } catch (error) {
-            console.error("Error fetching products:", error);
-        }
-    };
 
     useFocusEffect(
         useCallback(() => {
+            const fetchProducts = async () => {
+                try {
+                    const data = await getAllProduct();
+                    const filteredProducts = data.products.filter(product => product.sack >= 1);
+                    setProducts(filteredProducts);
+                } catch (error) {
+                    console.error("Error fetching products:", error);
+                }
+            };
             fetchProducts();
         }, [])
     );

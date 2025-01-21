@@ -45,11 +45,11 @@ export default function RootLayout() {
                 )
             }} />
 
-            <Tabs.Screen name="product" options={{
+            {/* <Tabs.Screen name="product" options={{
                 headerShown: false, title: 'Product', tabBarIcon: ({ color }) => (
                     <Ionicons name='add-circle-outline' color={color} size={28} />
                 )
-            }} />
+            }} /> */}
 
             <Tabs.Screen name="order" options={{
                 headerShown: false, title: 'Orders', tabBarIcon: ({ color }) => (
@@ -64,4 +64,4 @@ export default function RootLayout() {
             }} />
         </Tabs>
     );
-}
+}   

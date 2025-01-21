@@ -5,17 +5,20 @@ import { useEffect, useState } from 'react';
 import { getUser } from '../../../(services)/api/Users/getUser';
 import { useDispatch, useSelector } from 'react-redux';
 import baseURL from '../../../../assets/common/baseURL';
+import { initPaymentSheet, presentPaymentSheet } from '@stripe/stripe-react-native';
 import axios from 'axios';
 import { clearCart } from '../../../(redux)/cartSlice';
 
 const Checkout = () => {
-    const dispatch = useDispatch()
+    const dispatch = useDispatch();
     const route = useRoute();
     const { items, sackCounts, totalPrice } = route.params;
     const [seller, setSeller] = useState(null);
     const { user } = useSelector((state) => state.auth);
     const userAddress = user?.address || user?.user?.address;
     const navigation = useNavigation();
+
+    const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
 
     useEffect(() => {
         let isMounted = true;
@@ -43,59 +46,132 @@ const Checkout = () => {
         };
     }, [items]);
 
-    const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
-
     const handlePaymentSelection = (method) => {
         setSelectedPaymentMethod(method);
     };
 
     const handleCheckout = async () => {
-        const userAddress = user?.address || user?.user?.address;
-        const checkoutData = {
-            userId: user?._id || user?.user?._id,
-            sellerId: items[0]?.product.seller,
-            products: items.map((item) => ({
-                productId: item.product._id,
-                sackCount: sackCounts[item.product._id] || 0,
-                price: item.product.price * (sackCounts[item.product._id] || 0),
-            })),
-            deliveryAddress: userAddress || {},
-            paymentMethod: selectedPaymentMethod,
-            totalPrice: totalPrice,
-        };
+        if (selectedPaymentMethod === 'Online Payment') {
+            // Create payment intent on the server
+            try {
+                const response = await axios.post(`${baseURL}/order/checkout/create-payment-intent`, {
+                    amount: totalPrice,
+                    currency: 'php',
+                    userId: user?._id || user?.user?._id,
+                });
+                console.log(response.data)
 
-        try {
-            const response = await axios.post(`${baseURL}/order/checkout`, checkoutData);
-            console.log(response)
-            if (response.status === 201 && response.data.message === 'Checkout successful') {
+                const { clientSecret } = response.data;
 
-                Alert.alert(
-                    'Checkout Successful',
-                    'Your order has been placed successfully!',
-                    [
-                        {
-                            text: 'OK',
-                            onPress: () => {
-                                navigation.navigate('components/Buyer/Transaction/confirmationScreen', {
-                                    items,
-                                    sackCounts,
-                                    totalPrice,
-                                    paymentMethod: selectedPaymentMethod,
-                                    deliveryAddress: userAddress,
-                                    seller: seller,
-                                    checkoutId: response.data.checkout._id, 
-                                });
-                            },
-                        },
-                    ],
-                    { cancelable: false }
-                );
-                dispatch(clearCart());
-            } else {
-                console.error('Checkout failed:', response.data);
+                const billingDetails = {
+                    name: user?.name || user?.user?.name,
+                    email: user?.email || user?.user?.email,
+                };
+
+                await initPaymentSheet({
+                    paymentIntentClientSecret: clientSecret,
+                    merchantDisplayName: 'Taytay Rizal MarketPlace',
+                    defaultBillingDetails: billingDetails,
+                });
+
+                const { error } = await presentPaymentSheet();
+
+                if (error) {
+                    if (error.code === 'Canceled') {
+                        return false;
+                    }
+                    Alert.alert('Error',` Error code: ${error.code}`, error.message);
+                    console.error('Error presenting payment sheet:', error);
+                    return false;
+                } else {
+                    const checkoutData = {
+                        userId: user?._id || user?.user?._id,
+                        sellerId: items[0]?.product.seller,
+                        products: items.map((item) => ({
+                            productId: item.product._id,
+                            sackCount: sackCounts[item.product._id] || 0,
+                            price: item.product.price * (sackCounts[item.product._id] || 0),
+                        })),
+                        deliveryAddress: userAddress || {},
+                        paymentMethod: selectedPaymentMethod,
+                        totalPrice: totalPrice,
+                        paymentTerm: 'Fully Paid'
+                    };
+
+                    // console.log(checkoutData)
+
+                    const checkoutResponse = await axios.post(`${baseURL}/order/checkout`, checkoutData);
+                    if (checkoutResponse) {
+                        Alert.alert('Checkout Successful', 'Your order has been placed successfully!');
+                        navigation.navigate('components/Buyer/Transaction/confirmationScreen', {
+                            items,
+                            sackCounts,
+                            totalPrice,
+                            paymentMethod: selectedPaymentMethod,
+                            deliveryAddress: userAddress,
+                            seller: seller,
+                            checkoutId: checkoutResponse.data.checkout._id,
+                        });
+                        dispatch(clearCart());
+                    } else {
+                        console.error('Checkout failed:', checkoutResponse.data);
+                    }
+                }
+            } catch (error) {
+                console.error('Error during Stripe payment:', error);
+                Alert.alert('Payment Failed', 'Something went wrong during the payment process.');
             }
-        } catch (error) {
-            console.error('Error during checkout:', error);
+        } else {
+            // Handle Cash on Delivery Checkout
+            const userAddress = user?.address || user?.user?.address;
+            const checkoutData = {
+                userId: user?._id || user?.user?._id,
+                sellerId: items[0]?.product.seller,
+                products: items.map((item) => ({
+                    productId: item.product._id,
+                    sackCount: sackCounts[item.product._id] || 0,
+                    price: item.product.price * (sackCounts[item.product._id] || 0),
+                })),
+                deliveryAddress: userAddress || {},
+                paymentMethod: selectedPaymentMethod,
+                totalPrice: totalPrice,
+                paymentTerm: 'Not Paid'
+            };
+            // console.log('Checkout Data', checkoutData)
+
+            try {
+                const response = await axios.post(`${baseURL}/order/checkout`, checkoutData);
+                console.log(response)
+                if (response.status === 201 && response.data.message === 'Checkout successful') {
+
+                    Alert.alert(
+                        'Checkout Successful',
+                        'Your order has been placed successfully!',
+                        [
+                            {
+                                text: 'OK',
+                                onPress: () => {
+                                    navigation.navigate('components/Buyer/Transaction/confirmationScreen', {
+                                        items,
+                                        sackCounts,
+                                        totalPrice,
+                                        paymentMethod: selectedPaymentMethod,
+                                        deliveryAddress: userAddress,
+                                        seller: seller,
+                                        checkoutId: response.data.checkout._id,
+                                    });
+                                },
+                            },
+                        ],
+                        { cancelable: false }
+                    );
+                    dispatch(clearCart());
+                } else {
+                    console.error('Checkout failed:', response.data);
+                }
+            } catch (error) {
+                console.error('Error during checkout:', error);
+            }
         }
     };
 
@@ -311,4 +387,3 @@ const styles = StyleSheet.create({
 });
 
 export default Checkout;
-

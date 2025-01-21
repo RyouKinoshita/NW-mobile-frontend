@@ -26,7 +26,12 @@ export default function RootLayout() {
             case 'seller':
                 router.replace("/components/Seller/(tabs)");
                 break;
-
+            case 'admin':
+                router.replace("/components/Admin/(tabs)");
+                break;
+            case 'super admin':
+                router.replace("/components/SuperAdmin/(tabs)");
+                break;
             default:
                 break;
         }
@@ -63,4 +68,3 @@ export default function RootLayout() {
         </Tabs>
     );
 }
-
