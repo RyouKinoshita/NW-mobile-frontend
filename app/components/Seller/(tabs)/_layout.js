@@ -12,30 +12,7 @@ export default function RootLayout() {
     const { user } = useSelector((state) => state.auth);
     const router = useRouter();
 
-    useEffect(() => {
-        if (!user) {
-            router.replace("/");
-            return;
-        }
-
-        const role = user.user?.role || user.role;
-        switch (role) {
-            case 'buyer':
-                router.replace("/(tabs)");
-                break;
-            case 'seller':
-                router.replace("/components/Seller/(tabs)");
-                break;
-            case 'admin':
-                router.replace("/components/Admin/(tabs)");
-                break;
-            case 'super admin':
-                router.replace("/components/SuperAdmin/(tabs)");
-                break;
-            default:
-                break;
-        }
-    }, [user, router]);
+   
 
     return (
         <Tabs>

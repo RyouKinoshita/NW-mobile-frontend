@@ -15,15 +15,11 @@ function AppNavigation() {
 
     return (
         <ArticleProvider>
-            <Stack screenOptions={{ headerShown: false }}>
-                <Stack.Screen
-                    name="index"
-                    options={{ title: "Home", headerShown: false }}
-                />
-                <Stack.Screen name="auth/login" options={{ title: "Login", headerShown: false }} />
-                <Stack.Screen name="auth/register" options={{ title: "Register", headerShown: false }} />
-                <Stack.Screen name="(tabs)" options={{ title: "Tabs", headerShown: false }} />
-                {/* <Stack.Screen name="/components/Seller/components/Product/createPost" options={{ title: "Create Product", headerShown: false }} /> */}
+            <Stack initialRouteName="index" screenOptions={{ headerShown: false }}>
+                <Stack.Screen name="index" options={{ title: "Home" }} />
+                <Stack.Screen name="auth/login" options={{ title: "Login" }} />
+                <Stack.Screen name="auth/register" options={{ title: "Register" }} />
+                <Stack.Screen name="(tabs)" options={{ title: "Tabs" }} />
             </Stack>
         </ArticleProvider>
     );

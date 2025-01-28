@@ -6,11 +6,14 @@ import { useNavigation, useRouter } from 'expo-router';
 import { getAllProduct } from '../../../(services)/api/Product/getAllProducts';
 import { useFocusEffect } from '@react-navigation/native';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import { useSelector } from 'react-redux';
 
 const Product = () => {
     const router = useRouter();
+    const { user } = useSelector((state) => state.auth)
     const [products, setProducts] = useState([]);
     const navigation = useNavigation();
+    const sellerAvailabilityToPost = user?.stripePublishableKey || user?.user?.stripePublishableKey
 
     // Fetch posts
 
@@ -32,7 +35,6 @@ const Product = () => {
     return (
         <>
             <StatusBar translucent backgroundColor={"transparent"} />
-
             <View style={styles.headerContainer}>
                 <TouchableOpacity
                     onPress={() => router.push("components/Seller/components/Product/myProducts")}
@@ -47,17 +49,16 @@ const Product = () => {
                     style={styles.createProductButton}
                 >
                     <Text style={styles.createText}>Create Product</Text>
-                    <Ionicons name='add-circle-outline' color={'white'} size={28} />
+                    <Ionicons name="add-circle-outline" color={"white"} size={28} />
                 </TouchableOpacity>
             </View>
-
-
             <ScrollView style={styles.container}>
                 <View style={styles.productContainer}>
                     {products.map((product) => (
                         <View key={product._id} style={styles.productCard}>
                             <Image source={{ uri: product.images[0].url }} style={styles.productImage} />
-                            <TouchableOpacity onPress={() => navigation.navigate('components/Seller/components/Product/seeProduct', { product })}
+                            <TouchableOpacity
+                                onPress={() => navigation.navigate("components/Seller/components/Product/seeProduct", { product })}
                             >
                                 <Text style={styles.productValue}>{product.name}</Text>
                                 <Text style={styles.productLabel}>Price:</Text>

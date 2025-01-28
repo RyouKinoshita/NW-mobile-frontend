@@ -33,7 +33,7 @@ export default function Login() {
     });
 
     const user = useSelector((state) => state.auth.user);
-
+ 
     useEffect(() => {
         if (user) {
             router.push("/(tabs)");
@@ -50,16 +50,32 @@ export default function Login() {
                         initialValues={{ email: "", password: "" }}
                         validationSchema={LoginSchema}
                         onSubmit={(values) => {
-                            mutation.mutateAsync(values)
+                            mutation
+                                .mutateAsync(values)
                                 .then((data) => {
                                     dispatch(loginAction(data));
                                     dispatch(setUserId(data.user._id));
+
+                                    const role = data.user.role;
+                                    switch (role) {
+                                        case "buyer":
+                                            router.replace("/(tabs)");
+                                            break;
+                                        case "seller":
+                                            router.replace("/components/Seller/(tabs)");
+                                            break;
+                                        case "admin":
+                                            router.replace("/components/Admin/(tabs)");
+                                            break;
+                                        case "super admin":
+                                            router.replace("/components/SuperAdmin/(tabs)");
+                                            break;
+                                        default:
+                                            break;
+                                    }
                                 })
                                 .catch((err) => {
-                                    Alert.alert(
-                                        "Login Failed", "Your Email or Password is Incorrent. Try Again",
-                                        [{ text: "OK" }]
-                                    );
+                                    Alert.alert("Login Failed", "Your Email or Password is Incorrect. Try Again", [{ text: "OK" }]);
                                     console.log(err);
                                 });
                         }}
@@ -158,5 +174,3 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
     },
 });
-
-

@@ -1,4 +1,4 @@
-import { Button, Image, ScrollView, StatusBar, StyleSheet,Alert, Text, View } from 'react-native';
+import { Button, Image, ScrollView, StatusBar, StyleSheet, Alert, Text, View } from 'react-native';
 import React, { useCallback, useState } from 'react';
 import { useFocusEffect, useRoute } from '@react-navigation/native';
 import { getOrderProduct } from '../../../../(services)/api/Seller/getOrderProduct';
@@ -15,7 +15,7 @@ const SeeOrder = () => {
     console.log('Order:', order._id)
     const handleStatusUpdate = async () => {
         try {
-            const data = await axios.post( `${baseURL}/order/update-status/`, {
+            const data = await axios.post(`${baseURL}/order/update-status/`, {
                 orderId: order._id,
                 status: status,
             })
@@ -59,8 +59,6 @@ const SeeOrder = () => {
                                 styles.status,
                                 order.status === 'Pending' && styles.status_pending,
                                 order.status === 'Confirmed' && styles.status_confirmed,
-                                order.status === 'In Storage' && styles.status_inStorage,
-                                order.status === 'On Storage' && styles.status_inStorage,
                                 order.status === 'Out for Delivery' && styles.status_outForDelivery,
                                 order.status === 'Delivered' && styles.status_delivered,
                                 order.status === 'Cancelled' && styles.status_cancelled,
@@ -138,6 +136,14 @@ const SeeOrder = () => {
                     {status === 'Pending' && (
                         <View style={styles.buttonContainer}>
                             <Button title="Confirm Order" onPress={handleStatusUpdate} />
+                        </View>
+                    )}
+                    {(status === 'Confirmed') && (
+                        <View style={styles.buttonContainer}>
+                            <Button
+                                title={status === 'Confirmed' ? 'Deliver Item? ' : 'NA'}
+                                onPress={handleStatusUpdate}
+                            />
                         </View>
                     )}
                 </View>

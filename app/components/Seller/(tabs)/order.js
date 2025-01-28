@@ -46,8 +46,6 @@ const Order = () => {
                                             styles.status,
                                             order.status === 'Pending' && styles.status_pending,
                                             order.status === 'Confirmed' && styles.status_confirmed,
-                                            order.status === 'In Storage' && styles.status_inStorage,
-                                            order.status === 'On Storage' && styles.status_inStorage,
                                             order.status === 'Out for Delivery' && styles.status_outForDelivery,
                                             order.status === 'Delivered' && styles.status_delivered,
                                             order.status === 'Cancelled' && styles.status_cancelled,

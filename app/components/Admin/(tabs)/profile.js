@@ -14,7 +14,7 @@ const Profile = () => {
 
     const handleLogout = () => {
         dispatch(logoutAction());
-        router.push("/auth/login");
+        router.push("/");
     };
     return (
         <>

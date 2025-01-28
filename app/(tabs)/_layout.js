@@ -3,11 +3,10 @@ import { useSelector } from "react-redux";
 import { FontAwesome } from '@expo/vector-icons';
 import { useEffect } from "react";
 import { useRouter } from "expo-router";
-import Ionicons from '@expo/vector-icons/Ionicons';
 import Fontisto from '@expo/vector-icons/Fontisto';
-import { View, Text, StyleSheet } from 'react-native';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
+
 export default function RootLayout() {
     const { user } = useSelector((state) => state.auth);
     const router = useRouter();
@@ -67,4 +66,4 @@ export default function RootLayout() {
             }} />
         </Tabs>
     );
-}
+};

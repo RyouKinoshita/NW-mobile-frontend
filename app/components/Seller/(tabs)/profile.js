@@ -14,13 +14,25 @@ const Profile = () => {
 
     const handleLogout = () => {
         dispatch(logoutAction());
-        router.push("/auth/login");
+        router.push("/");
     };
     return (
         <>
             <StatusBar translucent backgroundColor={"transparent"} />
             <View style={styles.container}>
                 <Text> Profile </Text>
+                <TouchableOpacity style={styles.option}
+                    onPress={() => navigation.navigate('components/Seller/components/Stripe/addStripeKey', { user })}
+                >
+                    <Icon name="lock" size={24} color="#f44336" />
+                    <Text style={styles.optionText}>Set up Stripe</Text>
+                    <Icon
+                        name="angle-right"
+                        size={24}
+                        color="#999"
+                        style={styles.optionIcon}
+                    />
+                </TouchableOpacity>
                 <TouchableOpacity style={styles.option} onPress={handleLogout}>
                     <Icon name="sign-out" size={24} color="#e91e63" />
                     <Text style={styles.optionText}>Logout</Text>

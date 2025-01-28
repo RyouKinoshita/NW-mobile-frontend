@@ -8,6 +8,7 @@ import baseURL from '../../../../assets/common/baseURL';
 import { initPaymentSheet, presentPaymentSheet } from '@stripe/stripe-react-native';
 import axios from 'axios';
 import { clearCart } from '../../../(redux)/cartSlice';
+import { StripeProvider } from '@stripe/stripe-react-native';
 
 const Checkout = () => {
     const dispatch = useDispatch();
@@ -17,6 +18,8 @@ const Checkout = () => {
     const { user } = useSelector((state) => state.auth);
     const userAddress = user?.address || user?.user?.address;
     const navigation = useNavigation();
+    const sellerPublishableKey = seller?.stripePublishableKey || ''
+    // console.log(sellerPublishableKey)
 
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
 
@@ -54,10 +57,12 @@ const Checkout = () => {
         if (selectedPaymentMethod === 'Online Payment') {
             // Create payment intent on the server
             try {
+
                 const response = await axios.post(`${baseURL}/order/checkout/create-payment-intent`, {
                     amount: totalPrice,
                     currency: 'php',
                     userId: user?._id || user?.user?._id,
+                    sellerId: seller._id,
                 });
                 console.log(response.data)
 
@@ -80,7 +85,7 @@ const Checkout = () => {
                     if (error.code === 'Canceled') {
                         return false;
                     }
-                    Alert.alert('Error',` Error code: ${error.code}`, error.message);
+                    Alert.alert('Error', ` Error code: ${error.code}, error.message`);
                     console.error('Error presenting payment sheet:', error);
                     return false;
                 } else {
@@ -177,104 +182,101 @@ const Checkout = () => {
 
     return (
         <>
-            <StatusBar translucent backgroundColor={"transparent"} />
-            <View style={styles.container}>
-                <Text style={styles.title}>Checkout</Text>
-                <Text style={styles.totalPrice}>Total Price: ₱{totalPrice}</Text>
-                <Text style={styles.subtitle}>To be delivered: 3-4 days</Text>
+            <StripeProvider publishableKey={sellerPublishableKey}>
+                <StatusBar translucent backgroundColor={"transparent"} />
+                <View style={styles.container}>
+                    <Text style={styles.title}>Checkout</Text>
+                    <Text style={styles.totalPrice}>Total Price: ₱{totalPrice}</Text>
+                    <Text style={styles.subtitle}>To be delivered: 3-4 days</Text>
 
-                {/* Display Delivery Address */}
-                <Text style={styles.subtitle}>Delivery Address:</Text>
-                {userAddress ? (
-                    <View style={styles.addressContainer}>
-                        <Text style={styles.addressText}>Lot Number: {userAddress.lotNum}</Text>
-                        <Text style={styles.addressText}>Street: {userAddress.street}</Text>
-                        <Text style={styles.addressText}>Baranggay: {userAddress.baranggay}</Text>
-                        <Text style={styles.addressText}>City: {userAddress.city}</Text>
+                    <Text style={styles.subtitle}>Delivery Address:</Text>
+                    {userAddress ? (
+                        <View style={styles.addressContainer}>
+                            <Text style={styles.addressText}>Lot Number: {userAddress.lotNum}</Text>
+                            <Text style={styles.addressText}>Street: {userAddress.street}</Text>
+                            <Text style={styles.addressText}>Baranggay: {userAddress.baranggay}</Text>
+                            <Text style={styles.addressText}>City: {userAddress.city}</Text>
+                        </View>
+                    ) : (
+                        <Text style={styles.noAddress}>No delivery address available</Text>
+                    )}
+
+                    <Text style={styles.subtitle}>Items:</Text>
+                    <View style={styles.itemsContainer}>
+                        {items.map((item, index) => {
+                            const product = item.product;
+                            const productImageUrl = product.images[0]?.url;
+                            return (
+                                <View key={index} style={styles.item}>
+                                    {productImageUrl && (
+                                        <Image
+                                            source={{ uri: productImageUrl }}
+                                            style={styles.productImage}
+                                        />
+                                    )}
+                                    <Text>{item.product.name}</Text>
+                                    <Text>{sackCounts[item.product._id] || 0} Sack(s)</Text>
+                                    <Text>₱{item.product.price * (sackCounts[item.product._id] || 0)}</Text>
+
+                                    {seller && (
+                                        <>
+                                            <Text>Seller:</Text>
+                                            <View style={styles.seller}>
+                                                <Text>{seller.name}</Text>
+                                                <Image
+                                                    source={{ uri: seller.avatar.url }}
+                                                    style={styles.avatar}
+                                                />
+                                            </View>
+                                        </>
+                                    )}
+                                </View>
+                            );
+                        })}
                     </View>
-                ) : (
-                    <Text style={styles.noAddress}>No delivery address available</Text>
-                )}
+                    <Text style={styles.title}>Select Payment Method:</Text>
+                    <View style={styles.paymentOptions}>
+                        <TouchableOpacity
+                            style={[
+                                styles.paymentButton,
+                                selectedPaymentMethod === 'Cash on Delivery' && styles.selectedButton,
+                            ]}
+                            onPress={() => handlePaymentSelection('Cash on Delivery')}
+                        >
+                            <Text style={styles.paymentText}>Cash on Delivery</Text>
+                        </TouchableOpacity>
 
-                <Text style={styles.subtitle}>Items:</Text>
-                <View style={styles.itemsContainer}>
-                    {items.map((item, index) => {
-                        const product = item.product;
-                        const productImageUrl = product.images[0]?.url;
-                        return (
-                            <View key={index} style={styles.item}>
-                                {/* Display product info */}
-                                {productImageUrl && (
-                                    <Image
-                                        source={{ uri: productImageUrl }}
-                                        style={styles.productImage}
-                                    />
-                                )}
-                                <Text>{item.product.name}</Text>
-                                <Text>{sackCounts[item.product._id] || 0} Sack(s)</Text>
-                                <Text>₱{item.product.price * (sackCounts[item.product._id] || 0)}</Text>
+                        {sellerPublishableKey && (
+                            <TouchableOpacity
+                                style={[
+                                    styles.paymentButton,
+                                    selectedPaymentMethod === 'Online Payment' && styles.selectedButton,
+                                ]}
+                                onPress={() => handlePaymentSelection('Online Payment')}
+                            >
+                                <Text style={styles.paymentText}>Online Payment</Text>
+                            </TouchableOpacity>
+                        )}
+                    </View>
 
-                                {/* Display the seller */}
-                                {seller && (
-                                    <>
-                                        <Text>Seller:</Text>
-                                        <View style={styles.seller}>
-                                            <Text>{seller.name}</Text>
-                                            <Image
-                                                source={{ uri: seller.avatar.url }}
-                                                style={styles.avatar}
-                                            />
-                                        </View>
-                                    </>
-                                )}
-                            </View>
-                        );
-                    })}
-                </View>
-                <Text style={styles.title}>Select Payment Method:</Text>
-                <View style={styles.paymentOptions}>
-                    {/* Cash on Delivery */}
-                    <TouchableOpacity
-                        style={[
-                            styles.paymentButton,
-                            selectedPaymentMethod === 'Cash on Delivery' && styles.selectedButton,
-                        ]}
-                        onPress={() => handlePaymentSelection('Cash on Delivery')}
-                    >
-                        <Text style={styles.paymentText}>Cash on Delivery</Text>
-                    </TouchableOpacity>
-
-                    {/* Online Payment */}
-                    <TouchableOpacity
-                        style={[
-                            styles.paymentButton,
-                            selectedPaymentMethod === 'Online Payment' && styles.selectedButton,
-                        ]}
-                        onPress={() => handlePaymentSelection('Online Payment')}
-                    >
-                        <Text style={styles.paymentText}>Online Payment</Text>
-                    </TouchableOpacity>
+                    {selectedPaymentMethod && (
+                        <Text style={styles.selectedText}>
+                            Selected Payment Method: {selectedPaymentMethod}
+                        </Text>
+                    )}
                 </View>
 
-                {/* Display selected payment method */}
-                {selectedPaymentMethod && (
-                    <Text style={styles.selectedText}>
-                        Selected Payment Method: {selectedPaymentMethod}
-                    </Text>
-                )}
-            </View>
-
-            {/* Checkout Button at Bottom Right */}
-            <TouchableOpacity
-                style={[
-                    styles.checkoutButton,
-                    !selectedPaymentMethod && styles.disabledButton, // Apply disabled style if no payment method is selected
-                ]}
-                onPress={handleCheckout}
-                disabled={!selectedPaymentMethod} // Disable the button if no payment method is selected
-            >
-                <Text style={styles.checkoutButtonText}>Proceed to Checkout</Text>
-            </TouchableOpacity>
+                <TouchableOpacity
+                    style={[
+                        styles.checkoutButton,
+                        !selectedPaymentMethod && styles.disabledButton,
+                    ]}
+                    onPress={handleCheckout}
+                    disabled={!selectedPaymentMethod}
+                >
+                    <Text style={styles.checkoutButtonText}>Proceed to Checkout</Text>
+                </TouchableOpacity>
+            </StripeProvider>
         </>
     );
 };
