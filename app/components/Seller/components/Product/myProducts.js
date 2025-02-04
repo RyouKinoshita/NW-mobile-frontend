@@ -1,4 +1,4 @@
-import { Image, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View, Alert } from 'react-native';
 import React, { useCallback, useEffect, useState } from 'react';
 import Constants from 'expo-constants';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -7,6 +7,8 @@ import { getAllProduct } from '../../../../(services)/api/Product/getAllProducts
 import { useFocusEffect } from '@react-navigation/native';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useSelector } from 'react-redux';
+
+import { deleteProduct } from '../../../../(services)/api/SuperAdmin/Product/deleteProduct'
 
 const MyProducts = () => {
     const router = useRouter();
@@ -32,6 +34,30 @@ const MyProducts = () => {
             fetchProducts();
         }, [user])
     );
+
+    const handleDelete = (_id) => {
+        Alert.alert(
+            'Delete Product',
+            'Are you sure you want to delete this product?',
+            [
+                { text: 'Cancel' },
+                {
+                    text: 'Delete',
+                    onPress: async () => {
+                        try {
+                            await deleteProduct(_id);
+                            Alert.alert('Success', 'Product successfully deleted.');
+                            setRefresh(prev => !prev);  // Toggle refresh state to trigger re-fetch
+                        } catch (error) {
+                            console.error('Error deleting product:', error);
+                            Alert.alert('Error', 'Failed to delete product. Please try again.');
+                        }
+                    },
+                },
+            ]
+        );
+    };
+
 
     return (
         <>
@@ -59,6 +85,15 @@ const MyProducts = () => {
                             <Text style={styles.productValue}>{product.description}</Text>
                             <Text style={styles.productLabel}>Location:</Text>
                             <Text style={styles.productValue}>{product.location}</Text>
+                            <TouchableOpacity
+                                onPress={() => navigation.navigate('components/SuperAdmin/Screens/Edit/EditProduct', { product })}
+                            >
+                                <Ionicons name="pencil" size={24} color="#4caf50" />
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={() => handleDelete(product._id)}>
+                                <Ionicons name="trash" size={24} color="red" style={styles.deleteIcon} />
+                            </TouchableOpacity>
+
                             {/* </TouchableOpacity> */}
                         </View>
                     ))}

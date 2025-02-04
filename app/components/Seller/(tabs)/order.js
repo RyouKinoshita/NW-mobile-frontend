@@ -17,7 +17,7 @@ const Order = () => {
                     const data = await getSellerOrders(sellerId);
                     setOrders(data.orders);
                 } catch (error) {
-                    console.error('Error fetching orders:', error);
+                    
                 }
             };
             fetchSellerOrder();
@@ -32,7 +32,9 @@ const Order = () => {
             <StatusBar translucent backgroundColor="transparent" />
             <ScrollView style={styles.container}>
                 <Text style={styles.header}>Orders</Text>
-                {orders.length > 0 ? (
+                {orders?.length === 0 ? (
+                     <Text style={styles.noOrdersText}>No orders available.</Text>
+                ) : (
                     orders.map((order) => (
                         <TouchableOpacity
                             key={order._id}
@@ -68,8 +70,7 @@ const Order = () => {
                             </View>
                         </TouchableOpacity>
                     ))
-                ) : (
-                    <Text style={styles.noOrdersText}>No orders available.</Text>
+                   
                 )}
             </ScrollView>
         </>
