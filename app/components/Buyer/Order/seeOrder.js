@@ -1,24 +1,24 @@
-import { Alert, Button, Image, ScrollView, StatusBar, StyleSheet, Text, View } from 'react-native';
+import { Button, Image, ScrollView, StatusBar, StyleSheet, Alert, Text, View, TouchableOpacity, Modal } from 'react-native';
 import React, { useCallback, useState } from 'react';
 import { useFocusEffect, useRoute } from '@react-navigation/native';
-import { getOrderProduct } from '../../../(services)/api/Seller/getOrderProduct';
 import axios from 'axios';
-import baseURL from '../../../../assets/common/baseURL';
 import { useNavigation } from 'expo-router';
+import { getOrderProduct } from '../../../(services)/api/Seller/getOrderProduct';
+import baseURL from '../../../../assets/common/baseURL';
 
 const SeeOrder = () => {
     const route = useRoute();
     const { order } = route.params || {};
     const [status, setStatus] = useState(order?.status || 'pending');
-    const navigation = useNavigation()
-    // console.log(status)
+    const [modalVisible, setModalVisible] = useState(false);
+    const navigation = useNavigation();
 
     const handleStatusUpdate = async () => {
         try {
-            const data = await axios.post( `${baseURL}/order/update-status/`, {
+            const data = await axios.post(`${baseURL}/order/update-status/`, {
                 orderId: order._id,
                 status: status,
-            })
+            });
 
             Alert.alert(
                 "Confirm Status Successfully",
@@ -124,10 +124,35 @@ const SeeOrder = () => {
                     <View style={styles.addressContainer}>
                         <Text style={styles.sectionTitle}>Delivery Address:</Text>
                         <Text style={styles.addressText}>
-                            {order.deliveryAddress.lotNum}, {order.deliveryAddress.street},{' '}
+                            {order.deliveryAddress.lotNum}, {order.deliveryAddress.street},
                             {order.deliveryAddress.baranggay}, {order.deliveryAddress.city}
                         </Text>
                     </View>
+                    {status === 'Out for Delivery' && (
+                        <>
+                            <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.button} >
+                                <Text style={styles.mapLink}>View Delivery Location</Text>
+                            </TouchableOpacity>
+                            <Modal
+                                animationType="slide"
+                                transparent={true}
+                                visible={modalVisible}
+                                onRequestClose={() => setModalVisible(false)}
+                            >
+                                <View style={styles.modalBackground}>
+                                    <View style={styles.modalContainer}>
+                                        <Image
+                                            source={{ uri: "https://maps.geoapify.com/v1/staticmap?style=toner-grey&width=320&height=220&center=lonlat:121.136086,14.558555&zoom=15.9318&apiKey=fda2e677ac64468e970a92f7a6766099" }}
+                                            style={styles.mapImage}
+                                        />
+                                        <TouchableOpacity style={styles.closeButton} onPress={() => setModalVisible(false)}>
+                                            <Text style={styles.closeButtonText}>Close</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                </View>
+                            </Modal>
+                        </>
+                    )}
                     <Text style={styles.paymentMethod}>
                         Payment Method: {order.paymentMethod}
                     </Text>
@@ -175,6 +200,16 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#333',
     },
+    paymentTerm: {
+        fontWeight: 'bold',
+        marginVertical: 8,
+    },
+    paymentPaid: {
+        color: '#ff9900',
+    },
+    paymentNotPaid: {
+        color: '#28a745',
+    },
     status: {
         fontSize: 14,
         fontWeight: 'bold',
@@ -213,16 +248,6 @@ const styles = StyleSheet.create({
         backgroundColor: '#f8d7da',
         color: '#721c24',
         textDecorationLine: 'line-through',
-    },
-    paymentTerm: {
-        fontWeight: 'bold',
-        marginVertical: 8,
-    },
-    paymentPaid: {
-        color: '#ff9900',
-    },
-    paymentNotPaid: {
-        color: '#28a745',
     },
     orderDate: {
         fontSize: 14,
@@ -293,5 +318,52 @@ const styles = StyleSheet.create({
     },
     buttonContainer: {
         marginTop: 15,
+    },
+    mapLink: {
+        fontSize: 16,
+        color: 'blue',
+        textDecorationLine: 'underline',
+    },
+    button: {
+        height: 30,
+        backgroundColor: "#FFAC1C",
+        justifyContent: "center",
+        alignItems: "center",
+        borderRadius: 8,
+        marginTop: 10,
+    },
+    modalBackground: {
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,0.6)',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    modalContainer: {
+        backgroundColor: '#fff',
+        padding: 20,
+        borderRadius: 12,
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5,
+    },
+    mapImage: {
+        width: 320,
+        height: 220,
+        borderRadius: 10,
+    },
+    closeButton: {
+        marginTop: 15,
+        backgroundColor: '#FF3B30',
+        paddingVertical: 12,
+        paddingHorizontal: 20,
+        borderRadius: 8,
+    },
+    closeButtonText: {
+        color: 'white',
+        fontWeight: 'bold',
+        fontSize: 16,
     },
 });

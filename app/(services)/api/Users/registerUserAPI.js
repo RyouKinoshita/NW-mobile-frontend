@@ -1,12 +1,13 @@
 import axios from 'axios';
 import baseURL from '../../../../assets/common/baseURL'
 
-const registerUser = async ({ email, password, name, avatar }) => {
+const registerUser = async ({ email, password, name, avatar, role }) => {
     try {
         const formData = new FormData();
         formData.append('email', email);
         formData.append('password', password);
         formData.append('name', name);
+        formData.append('role', role);
 
 
         if (avatar) {

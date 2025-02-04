@@ -1,10 +1,37 @@
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import { StatusBar, StyleSheet, Text, View, TouchableOpacity, Image, ScrollView } from 'react-native';
 import Constants from 'expo-constants';
-import { useNavigation, useRouter } from 'expo-router';
+import { useFocusEffect, useNavigation, useRouter } from 'expo-router';
+import { getAllProduct } from '../../../(services)/api/Product/getAllProducts';
 
 const SellerHome = () => {
     const router = useRouter();
+    const [products, setProducts] = useState([]);
+    const [recommended, setRecommended] = useState([]);
+
+    // Fetch products
+    const fetchProducts = async () => {
+        try {
+            const data = await getAllProduct();
+            const filteredProducts = data.products.filter(product => product.sack >= 1);
+            setProducts(filteredProducts);
+
+            // Filter recommended products
+            const recommendedProducts = filteredProducts.filter(product =>
+                product.quality.toLowerCase() === 'good' || product.quality.toLowerCase() === 'bruised' || product.price < 100
+            );
+            setRecommended(recommendedProducts);
+        } catch (error) {
+            console.error("Error fetching products:", error);
+        }
+    };
+
+    useFocusEffect(
+        useCallback(() => {
+            fetchProducts();
+        }, [])
+    );
+
     return (
         <>
             <StatusBar translucent backgroundColor="transparent" />
@@ -16,9 +43,9 @@ const SellerHome = () => {
                 </View>
 
                 {/* Banner Image */}
-                <Image 
-                    source={require('../../../../assets/vegetables.jpg')} 
-                    style={styles.image} 
+                <Image
+                    source={require('../../../../assets/vegetables.jpg')}
+                    style={styles.image}
                 />
 
                 {/* Welcome Text */}
@@ -31,15 +58,29 @@ const SellerHome = () => {
 
                 {/* Buttons */}
                 <View style={styles.buttonContainer}>
-                    <TouchableOpacity 
-                    onPress={() => router.push("components/Seller/components/Product/createProduct")}
-                     style={styles.button}>
+                    <TouchableOpacity
+                        onPress={() => router.push("components/Seller/components/Product/createProduct")}
+                        style={styles.button}>
                         <Text style={styles.buttonText}>Post Waste for Sale</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.buttonSecondary}>
-                        <Text style={styles.buttonTextSecondary}>View Orders</Text>
-                    </TouchableOpacity>
+                    {/* Product Listings */}
+                    <View style={styles.section}>
+                        <Text style={styles.sectionTitle}>Product Listings</Text>
+                        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                            {products.map(product => (
+                                <View key={product._id} style={styles.card}>
+                                    <Image
+                                        source={{ uri: product.images[0].url }}
+                                        style={styles.cardImage}
+                                    />
+                                    <Text style={styles.cardTitle}>{product.name}</Text>
+                                    <Text style={styles.cardPrice}>₱{product.price}/kg</Text>
+                                    <Text style={styles.cardDescription}>{product.description}</Text>
+                                </View>
+                            ))}
+                        </ScrollView>
+                    </View>
                 </View>
             </ScrollView>
         </>
@@ -116,6 +157,39 @@ const styles = StyleSheet.create({
         color: '#555',
         fontSize: 16,
         fontWeight: 'bold',
+    },
+    section: {
+        marginBottom: 40,
+        paddingHorizontal: 20,
+    },
+    sectionTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginBottom: 10,
+    },
+    card: {
+        backgroundColor: '#fff',
+        borderRadius: 10,
+        overflow: 'hidden',
+        marginRight: 10,
+        width: 150,
+        shadowColor: '#000',
+        shadowOpacity: 0.1,
+        shadowRadius: 5,
+    },
+    cardImage: {
+        width: '100%',
+        height: 100,
+    },
+    cardTitle: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        padding: 10,
+    },
+    cardPrice: {
+        fontSize: 14,
+        color: '#4caf50',
+        padding: 10,
     },
 });
 

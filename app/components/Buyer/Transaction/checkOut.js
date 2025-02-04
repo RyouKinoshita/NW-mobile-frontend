@@ -62,7 +62,7 @@ const Checkout = () => {
                     amount: totalPrice,
                     currency: 'php',
                     userId: user?._id || user?.user?._id,
-                    sellerId: seller._id,
+                    sellerId: seller?._id,
                 });
                 console.log(response.data)
 

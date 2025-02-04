@@ -6,6 +6,7 @@ import * as Yup from 'yup';
 import * as ImagePicker from 'expo-image-picker';
 import { registerUser } from '../(services)/api/Users/registerUserAPI';
 import Constants from 'expo-constants';
+import { Picker } from '@react-native-picker/picker';
 
 
 // Schema
@@ -38,114 +39,127 @@ const Register = () => {
     <>
       <StatusBar translucent backgroundColor="transparent" />
       <View style={styles.container}>
-       
-          <View style={styles.overlay}>
-            <Formik
-              initialValues={{ email: "", password: "", confirmPassword: "", name: "" }}
-              onSubmit={async (values) => {
-                try {
-                  const response = await registerUser({
-                    ...values,
-                    avatar,
-                  });
-                  Alert.alert(
-                    "Registered Successfully",
-                    "You have been registered.",
-                    [
-                      {
-                        text: "OK",
-                        onPress: () => {
-                          router.push('/auth/login');
-                        },
+
+        <View style={styles.overlay}>
+          <Formik
+            initialValues={{ email: "", password: "", confirmPassword: "", name: "", role: "" }}
+            onSubmit={async (values) => {
+              try {
+                const response = await registerUser({
+                  ...values,
+                  avatar,
+                });
+                Alert.alert(
+                  "Registered Successfully",
+                  "You have been registered.",
+                  [
+                    {
+                      text: "OK",
+                      onPress: () => {
+                        router.push('/auth/login');
                       },
-                    ]
-                  );
-                } catch (error) {
-                  console.error('Registration failed:', error.response?.data?.message || error.message);
-                  Alert.alert(
-                    "Registration Failed",
-                    error.response?.data?.message || "An error occurred during registration. Please try again.",
-                    [
-                      {
-                        text: "OK",
-                      },
-                    ]
-                  );
-                }
-              }}
-              validationSchema={RegisterSchema}
-            >
-              {({
-                handleChange,
-                handleBlur,
-                handleSubmit,
-                values,
-                errors,
-                touched,
-              }) => (
-                <View style={styles.form}>
-                  <View style={styles.imageContainer}>
-                    <TouchableOpacity style={styles.imagePicker} onPress={pickImage}>
-                      {avatar ? (
-                        <Image source={{ uri: avatar }} style={styles.roundImage} />
-                      ) : (
-                        <>
-                          <Text style={styles.placeholderText}>No File Upload</Text>
-                          <Text style={styles.placeholderBellowText}>Select Avatar</Text>
-                        </>
-                      )}
-                    </TouchableOpacity>
-                  </View>
-                  <TextInput
-                    style={styles.input}
-                    placeholder="Name"
-                    onChangeText={handleChange("name")}
-                    onBlur={handleBlur("name")}
-                    value={values.name}
-                  />
-                  {errors.name && touched.name && (
-                    <Text style={styles.errorText}>{errors.name}</Text>
-                  )}
-                  <TextInput
-                    style={styles.input}
-                    placeholder="Email"
-                    onChangeText={handleChange("email")}
-                    onBlur={handleBlur("email")}
-                    value={values.email}
-                    keyboardType="email-address"
-                  />
-                  {errors.email && touched.email && (
-                    <Text style={styles.errorText}>{errors.email}</Text>
-                  )}
-                  <TextInput
-                    style={styles.input}
-                    placeholder="Password"
-                    onChangeText={handleChange("password")}
-                    onBlur={handleBlur("password")}
-                    value={values.password}
-                    secureTextEntry
-                  />
-                  {errors.password && touched.password && (
-                    <Text style={styles.errorText}>{errors.password}</Text>
-                  )}
-                  <TextInput
-                    style={styles.input}
-                    placeholder="Confirm Password"
-                    onChangeText={handleChange("confirmPassword")}
-                    onBlur={handleBlur("confirmPassword")}
-                    value={values.confirmPassword}
-                    secureTextEntry
-                  />
-                  {errors.confirmPassword && touched.confirmPassword && (
-                    <Text style={styles.errorText}>{errors.confirmPassword}</Text>
-                  )}
-                  <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-                    <Text style={styles.buttonText}>Register</Text>
+                    },
+                  ]
+                );
+              } catch (error) {
+                console.error('Registration failed:', error.response?.data?.message || error.message);
+                Alert.alert(
+                  "Registration Failed",
+                  error.response?.data?.message || "An error occurred during registration. Please try again.",
+                  [
+                    {
+                      text: "OK",
+                    },
+                  ]
+                );
+              }
+            }}
+            validationSchema={RegisterSchema}
+          >
+            {({
+              handleChange,
+              handleBlur,
+              handleSubmit,
+              values,
+              errors,
+              touched,
+            }) => (
+              <View style={styles.form}>
+                <View style={styles.imageContainer}>
+                  <TouchableOpacity style={styles.imagePicker} onPress={pickImage}>
+                    {avatar ? (
+                      <Image source={{ uri: avatar }} style={styles.roundImage} />
+                    ) : (
+                      <>
+                        <Text style={styles.placeholderText}>No File Upload</Text>
+                        <Text style={styles.placeholderBellowText}>Select Avatar</Text>
+                      </>
+                    )}
                   </TouchableOpacity>
                 </View>
-              )}
-            </Formik>
-          </View>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Name"
+                  onChangeText={handleChange("name")}
+                  onBlur={handleBlur("name")}
+                  value={values.name}
+                />
+                {errors.name && touched.name && (
+                  <Text style={styles.errorText}>{errors.name}</Text>
+                )}
+                <TextInput
+                  style={styles.input}
+                  placeholder="Email"
+                  onChangeText={handleChange("email")}
+                  onBlur={handleBlur("email")}
+                  value={values.email}
+                  keyboardType="email-address"
+                />
+                {errors.email && touched.email && (
+                  <Text style={styles.errorText}>{errors.email}</Text>
+                )}
+                <TextInput
+                  style={styles.input}
+                  placeholder="Password"
+                  onChangeText={handleChange("password")}
+                  onBlur={handleBlur("password")}
+                  value={values.password}
+                  secureTextEntry
+                />
+                {errors.password && touched.password && (
+                  <Text style={styles.errorText}>{errors.password}</Text>
+                )}
+                <TextInput
+                  style={styles.input}
+                  placeholder="Confirm Password"
+                  onChangeText={handleChange("confirmPassword")}
+                  onBlur={handleBlur("confirmPassword")}
+                  value={values.confirmPassword}
+                  secureTextEntry
+                />
+                {errors.confirmPassword && touched.confirmPassword && (
+                  <Text style={styles.errorText}>{errors.confirmPassword}</Text>
+                )}
+                <View style={styles.pickerContainer}>
+                  <Picker
+                    style={styles.picker}
+                    selectedValue={values.role}
+                    onValueChange={(itemValue) => {
+                      handleChange("role")(itemValue);
+                      handleBlur("role");
+                    }}
+                  >
+                    <Picker.Item label="Buyer" value="buyer" color='gray' />
+                    <Picker.Item label="Seller" value="seller" color='gray' />
+                  </Picker>
+                </View>
+                <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+                  <Text style={styles.buttonText}>Register</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+          </Formik>
+        </View>
       </View>
     </>
   );
@@ -233,5 +247,21 @@ const styles = StyleSheet.create({
     color: "#888",
     textAlign: "center",
     fontSize: 12,
+  },
+  pickerContainer: {
+    borderRadius: 10,
+    overflow: 'hidden',
+    borderColor: '#ccc',
+    marginBottom: 15
+  },
+  picker: {
+    height: 30,
+    width: "70%",
+    borderColor: "black",
+    borderWidth: 1,
+    borderRadius: 20,
+    paddingHorizontal: 16,
+    marginBottom: 16,
+    backgroundColor: "#fff",
   },
 });

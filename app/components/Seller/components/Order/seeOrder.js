@@ -1,4 +1,4 @@
-import { Button, Image, ScrollView, StatusBar, StyleSheet, Alert, Text, View } from 'react-native';
+import { Button, Image, ScrollView, StatusBar, StyleSheet, Alert, Text, View, TouchableOpacity, Modal } from 'react-native';
 import React, { useCallback, useState } from 'react';
 import { useFocusEffect, useRoute } from '@react-navigation/native';
 import { getOrderProduct } from '../../../../(services)/api/Seller/getOrderProduct';
@@ -10,15 +10,15 @@ const SeeOrder = () => {
     const route = useRoute();
     const { order } = route.params || {};
     const [status, setStatus] = useState(order?.status || 'pending');
-    const navigation = useNavigation()
+    const [modalVisible, setModalVisible] = useState(false);
+    const navigation = useNavigation();
 
-    console.log('Order:', order._id)
     const handleStatusUpdate = async () => {
         try {
             const data = await axios.post(`${baseURL}/order/update-status/`, {
                 orderId: order._id,
                 status: status,
-            })
+            });
 
             Alert.alert(
                 "Confirm Status Successfully",
@@ -34,7 +34,6 @@ const SeeOrder = () => {
             );
         } catch (error) {
             console.error('Error during Confirming Status:', error);
-            Alert.alert('Confirming Status Failed', 'Something went wrong during the Confirming Status process.');
         }
     };
 
@@ -50,7 +49,7 @@ const SeeOrder = () => {
         <>
             <StatusBar translucent backgroundColor="transparent" />
             <ScrollView style={styles.container}>
-                <Text style={styles.header}>Order Details</Text>
+                <Text style={styles.header}> Order Details</Text>
                 <View style={styles.orderCard}>
                     <View style={styles.orderHeader}>
                         <Text style={styles.orderId}>Order ID: {order._id}</Text>
@@ -125,14 +124,19 @@ const SeeOrder = () => {
                     <View style={styles.addressContainer}>
                         <Text style={styles.sectionTitle}>Delivery Address:</Text>
                         <Text style={styles.addressText}>
-                            {order.deliveryAddress.lotNum}, {order.deliveryAddress.street},{' '}
+                            {order.deliveryAddress.lotNum}, {order.deliveryAddress.street},
                             {order.deliveryAddress.baranggay}, {order.deliveryAddress.city}
                         </Text>
                     </View>
+                    {status === 'Out for Delivery' && (
+                        <Image
+                            source={{ uri: "https://maps.geoapify.com/v1/staticmap?style=toner-grey&width=600&height=400&center=lonlat:121.136086,14.558555&zoom=15.9318&apiKey=fda2e677ac64468e970a92f7a6766099" }}
+                            style={{ width: 600, height: 400 }}
+                        />
+                    )}
                     <Text style={styles.paymentMethod}>
                         Payment Method: {order.paymentMethod}
                     </Text>
-
                     {status === 'Pending' && (
                         <View style={styles.buttonContainer}>
                             <Button title="Confirm Order" onPress={handleStatusUpdate} />
@@ -303,5 +307,24 @@ const styles = StyleSheet.create({
     },
     buttonContainer: {
         marginTop: 15,
+    },
+    mapLink: {
+        fontSize: 16,
+        color: 'blue',
+        textDecorationLine: 'underline',
+    },
+    modalContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0,0,0,0.5)',
+    },
+    button: {
+        height: 30,
+        backgroundColor: "#FFAC1C",
+        justifyContent: "center",
+        alignItems: "center",
+        borderRadius: 8,
+        marginTop: 10,
     },
 });

@@ -1,8 +1,36 @@
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import { StatusBar, StyleSheet, Text, View, TouchableOpacity, Image, TextInput, ScrollView } from 'react-native';
 import Constants from 'expo-constants';
+import { useFocusEffect } from 'expo-router';
+import { getAllProduct } from '../(services)/api/Product/getAllProducts';
 
 const BuyerHome = () => {
+    const [products, setProducts] = useState([]);
+    const [recommended, setRecommended] = useState([]);
+
+    // Fetch products
+    const fetchProducts = async () => {
+        try {
+            const data = await getAllProduct();
+            const filteredProducts = data.products.filter(product => product.sack >= 1);
+            setProducts(filteredProducts);
+            
+            // Filter recommended products
+            const recommendedProducts = filteredProducts.filter(product => 
+                product.quality.toLowerCase() === 'good' || product.quality.toLowerCase() === 'bruised' || product.price < 100
+            );
+            setRecommended(recommendedProducts);
+        } catch (error) {
+            console.error("Error fetching products:", error);
+        }
+    };
+
+    useFocusEffect(
+        useCallback(() => {
+            fetchProducts();
+        }, [])
+    );
+
     return (
         <>
             <StatusBar translucent backgroundColor="transparent" />
@@ -32,35 +60,22 @@ const BuyerHome = () => {
                 <View style={styles.section}>
                     <Text style={styles.sectionTitle}>Product Listings</Text>
                     <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                        <View style={styles.card}>
-                            <Image
-                                source={require('../../assets/vegetables.jpg')}
-                                style={styles.cardImage}
-                            />
-                            <Text style={styles.cardTitle}>Carrots</Text>
-                            <Text style={styles.cardPrice}>₱50/kg</Text>
-                        </View>
-                        <View style={styles.card}>
-                            <Image
-                                source={require('../../assets/vegetables.jpg')}
-                                style={styles.cardImage}
-                            />
-                            <Text style={styles.cardTitle}>Lettuce</Text>
-                            <Text style={styles.cardPrice}>₱80/kg</Text>
-                        </View>
-                        <View style={styles.card}>
-                            <Image
-                                source={require('../../assets/vegetables.jpg')}
-                                style={styles.cardImage}
-                            />
-                            <Text style={styles.cardTitle}>Tomatoes</Text>
-                            <Text style={styles.cardPrice}>₱60/kg</Text>
-                        </View>
+                        {products.map(product => (
+                            <View key={product._id} style={styles.card}>
+                                <Image
+                                    source={{ uri: product.images[0].url }}
+                                    style={styles.cardImage}
+                                />
+                                <Text style={styles.cardTitle}>{product.name}</Text>
+                                <Text style={styles.cardPrice}>₱{product.price}/kg</Text>
+                                <Text style={styles.cardDescription}>{product.description}</Text>
+                            </View>
+                        ))}
                     </ScrollView>
                 </View>
 
                 {/* Articles Section */}
-                <View style={styles.section}>
+                {/* <View style={styles.section}>
                     <Text style={styles.sectionTitle}>Articles</Text>
                     <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                         <View style={styles.card}>
@@ -85,30 +100,7 @@ const BuyerHome = () => {
                             <Text style={styles.cardTitle}>How to Prepare Pig Feed</Text>
                         </View>
                     </ScrollView>
-                </View>
-
-                {/* Recommended Section */}
-                <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>Recommended for You</Text>
-                    <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                        <View style={styles.card}>
-                            <Image
-                                source={require('../../assets/vegetables.jpg')}
-                                style={styles.cardImage}
-                            />
-                            <Text style={styles.cardTitle}>Bulk Lettuce Waste</Text>
-                            <Text style={styles.cardPrice}>₱1,000</Text>
-                        </View>
-                        <View style={styles.card}>
-                            <Image
-                                source={require('../../assets/vegetables.jpg')}
-                                style={styles.cardImage}
-                            />
-                            <Text style={styles.cardTitle}>Organic Carrot Peels</Text>
-                            <Text style={styles.cardPrice}>₱800</Text>
-                        </View>
-                    </ScrollView>
-                </View>
+                </View> */}
             </ScrollView>
         </>
     );
